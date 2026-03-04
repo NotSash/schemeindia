@@ -1,26 +1,483 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
+
+/* ============================================================
+   SchemeIndia — Custom Theme
+   ============================================================ */
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+
+  /* SchemeIndia Brand Colors */
+  --color-brand-blue: #1a365d;
+  --color-brand-blue-light: #2a4a7f;
+  --color-brand-saffron: #f6993f;
+  --color-brand-saffron-light: #fbbf68;
+  --color-brand-green: #38a169;
+  --color-brand-green-light: #68d391;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --radius: 0.625rem;
+  --background: oklch(0.985 0.002 247);
+  --foreground: oklch(0.22 0.02 260);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.02 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.22 0.02 260);
+  --primary: oklch(0.30 0.06 260);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.95 0.01 250);
+  --secondary-foreground: oklch(0.30 0.06 260);
+  --muted: oklch(0.95 0.01 250);
+  --muted-foreground: oklch(0.50 0.02 260);
+  --accent: oklch(0.75 0.16 55);
+  --accent-foreground: oklch(0.22 0.06 260);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.90 0.01 250);
+  --input: oklch(0.90 0.01 250);
+  --ring: oklch(0.30 0.06 260);
+  --chart-1: oklch(0.75 0.16 55);
+  --chart-2: oklch(0.65 0.17 155);
+  --chart-3: oklch(0.30 0.06 260);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0.002 247);
+  --sidebar-foreground: oklch(0.22 0.02 260);
+  --sidebar-primary: oklch(0.30 0.06 260);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.95 0.01 250);
+  --sidebar-accent-foreground: oklch(0.22 0.02 260);
+  --sidebar-border: oklch(0.90 0.01 250);
+  --sidebar-ring: oklch(0.30 0.06 260);
+}
+
+.dark {
+  --background: oklch(0.145 0.015 260);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.20 0.015 260);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.20 0.015 260);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.75 0.16 55);
+  --primary-foreground: oklch(0.15 0.04 260);
+  --secondary: oklch(0.25 0.015 260);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.25 0.015 260);
+  --muted-foreground: oklch(0.65 0.01 260);
+  --accent: oklch(0.75 0.16 55);
+  --accent-foreground: oklch(0.15 0.04 260);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.50 0.02 260);
+  --chart-1: oklch(0.75 0.16 55);
+  --chart-2: oklch(0.65 0.17 155);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.20 0.015 260);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.75 0.16 55);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.25 0.015 260);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.50 0.02 260);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
   }
 }
 
+/* ============================================================
+   Custom Animations
+   ============================================================ */
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-slow {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animate-count-up {
+  animation: countUp 0.5s ease-out forwards;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+/* Stagger animation delays */
+.delay-100 {
+  animation-delay: 100ms;
+}
+
+.delay-200 {
+  animation-delay: 200ms;
+}
+
+.delay-300 {
+  animation-delay: 300ms;
+}
+
+.delay-400 {
+  animation-delay: 400ms;
+}
+
+.delay-500 {
+  animation-delay: 500ms;
+}
+
+/* ============================================================
+   Custom Gradients
+   ============================================================ */
+
+.gradient-hero {
+  background: linear-gradient(135deg, #1a365d 0%, #2a4a7f 50%, #1a365d 100%);
+}
+
+.gradient-saffron {
+  background: linear-gradient(135deg, #f6993f 0%, #ed8936 50%, #dd6b20 100%);
+}
+
+.gradient-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.95));
+}
+
+/* ============================================================
+   Blur effects for paywall
+   ============================================================ */
+
+.scheme-blur {
+  filter: blur(6px);
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ============================================================
+   Google Translate Widget Overrides
+   ============================================================ */
+
+/* Hide the top banner frame completely */
+.goog-te-banner-frame,
+.goog-te-banner-frame.skiptranslate,
+iframe.goog-te-banner-frame {
+  display: none !important;
+  height: 0 !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Prevent Google Translate from pushing body down */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  top: 0 !important;
+  position: static !important;
+}
+
+/* Style the gadget container */
+.goog-te-gadget {
+  font-family: inherit !important;
+  font-size: 0 !important;
+  color: transparent !important;
+  line-height: 0 !important;
+}
+
+/* Style only the dropdown select */
+.goog-te-gadget .goog-te-combo {
+  border: 1px solid var(--border) !important;
+  border-radius: 6px !important;
+  padding: 4px 8px !important;
+  font-size: 13px !important;
+  font-family: inherit !important;
+  background: var(--background) !important;
+  color: var(--foreground) !important;
+  outline: none !important;
+  cursor: pointer !important;
+  height: 32px !important;
+  max-width: 140px !important;
+  appearance: auto !important;
+}
+
+/* Hide "Powered by Google" text and other attribution */
+.goog-te-gadget>span,
+.goog-te-gadget>div:not(:first-child),
+.goog-te-gadget a,
+.goog-logo-link,
+.goog-te-gadget img {
+  display: none !important;
+  font-size: 0 !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  width: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Fix any floating/overlay elements */
+.skiptranslate {
+  /* Allow the inline widget but block everything else */
+}
+
+.skiptranslate iframe {
+  display: none !important;
+  height: 0 !important;
+}
+
+/* Prevent translated page tooltip popups from breaking layout */
+.goog-te-spinner-pos,
+.goog-te-spinner-animation {
+  display: none !important;
+}
+
+#goog-gt-tt,
+.goog-te-balloon-frame {
+  display: none !important;
+}
+
+/* ============================================================
+   Progress bar for questionnaire
+   ============================================================ */
+
+.progress-fill {
+  transition: width 0.4s ease-in-out;
+}
+
+/* ============================================================
+   Scrollbar styling
+   ============================================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: oklch(0.70 0.02 260 / 40%);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.60 0.02 260 / 60%);
+}
+
+/* ============================================================
+   Print styles for PDF
+   ============================================================ */
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* ============================================================
+   Mobile-First Responsive Utilities
+   ============================================================ */
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Better touch targets on mobile */
+@media (max-width: 640px) {
+
+  button,
+  a,
+  [role="button"],
+  select,
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Fix Google Translate dropdown on small screens */
+  .goog-te-gadget .goog-te-combo {
+    max-width: 110px !important;
+    font-size: 11px !important;
+    height: 36px !important;
+    padding: 6px !important;
+  }
+
+  /* Prevent horizontal overflow everywhere */
+  main,
+  section,
+  article {
+    overflow-x: hidden;
+  }
+
+  /* Slightly larger line height for mobile readability */
+  body {
+    line-height: 1.7;
+  }
+}
+
+/* Safe area padding for notched devices (iPhone etc.) */
+@supports (padding: env(safe-area-inset-bottom)) {
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Prevent text selection on interactive elements */
+.no-select {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Hide scrollbars on mobile for horizontal scroll containers */
+.scroll-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Responsive container that snaps to screen edges on mobile */
+@media (max-width: 640px) {
+  .mobile-full {
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Truncate long text */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
