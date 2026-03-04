@@ -84,7 +84,7 @@ export default function Navbar() {
 
                 {/* Desktop Nav */}
                 <nav className="hidden lg:flex items-center gap-1">
-                    {navLinks.map((link) => (
+                    {!isLoggedIn && navLinks.map((link) => (
                         <Link
                             key={link.href}
                             href={link.href}
@@ -170,7 +170,7 @@ export default function Navbar() {
                                     </Link>
                                 </div>
                                 <nav className="flex flex-col p-4 gap-1">
-                                    {navLinks.map((link) => (
+                                    {!isLoggedIn && navLinks.map((link) => (
                                         <Link
                                             key={link.href}
                                             href={link.href}
