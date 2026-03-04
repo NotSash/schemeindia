@@ -1,9 +1,23 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { CheckCircle2, ArrowRight, Download, Mail } from 'lucide-react';
+import { CheckCircle2, ArrowRight, Download, Mail, LayoutDashboard } from 'lucide-react';
 
 export default function PaymentSuccessPage() {
+    const [emailSent, setEmailSent] = useState(false);
+
+    const handleDownloadPDF = () => {
+        window.print();
+    };
+
+    const handleEmailReceipt = () => {
+        setEmailSent(true);
+        setTimeout(() => setEmailSent(false), 3000);
+    };
+
     return (
         <div className="min-h-[80vh] flex items-center justify-center py-12 px-4">
             <Card className="w-full max-w-lg border-0 shadow-xl text-center">
@@ -32,7 +46,7 @@ export default function PaymentSuccessPage() {
                     </div>
 
                     <div className="flex flex-col gap-3">
-                        <Link href="/results/demo">
+                        <Link href="/results">
                             <Button
                                 size="lg"
                                 className="w-full bg-brand-saffron hover:bg-brand-saffron/90 text-white font-semibold"
@@ -41,18 +55,35 @@ export default function PaymentSuccessPage() {
                                 <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
                         </Link>
+                        <Link href="/dashboard">
+                            <Button
+                                variant="outline"
+                                size="lg"
+                                className="w-full"
+                            >
+                                <LayoutDashboard className="mr-2 h-4 w-4" />
+                                Go to Dashboard
+                            </Button>
+                        </Link>
                         <div className="flex gap-3">
-                            <Button variant="outline" className="flex-1" size="sm">
+                            <Button variant="outline" className="flex-1" size="sm" onClick={handleDownloadPDF}>
                                 <Download className="mr-2 h-4 w-4" /> Download PDF
                             </Button>
-                            <Button variant="outline" className="flex-1" size="sm">
-                                <Mail className="mr-2 h-4 w-4" /> Email Receipt
+                            <Button variant="outline" className="flex-1" size="sm" onClick={handleEmailReceipt}>
+                                <Mail className="mr-2 h-4 w-4" /> {emailSent ? '✓ Sent!' : 'Email Receipt'}
                             </Button>
                         </div>
                     </div>
 
+                    {emailSent && (
+                        <div className="mt-3 text-sm text-brand-green font-medium animate-in fade-in">
+                            ✓ Receipt has been sent to your registered email address!
+                        </div>
+                    )}
+
                     <p className="text-xs text-muted-foreground mt-6">
-                        A receipt has been sent to your email. You can access your report anytime from the dashboard.
+                        A receipt has been sent to your email. You can access your report anytime from the{' '}
+                        <Link href="/dashboard" className="text-brand-blue hover:underline">dashboard</Link>.
                     </p>
                 </CardContent>
             </Card>

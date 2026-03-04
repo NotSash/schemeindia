@@ -8,9 +8,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Eye, EyeOff, UserPlus } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 
 export default function SignupPage() {
     const router = useRouter();
+    const supabase = createClient();
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -33,12 +35,61 @@ export default function SignupPage() {
 
         setLoading(true);
         try {
-            // TODO: Replace with real Supabase auth
-            await new Promise((r) => setTimeout(r, 1000));
-            router.push('/questionnaire');
+            const { error: authError } = await supabase.auth.signUp({
+                email: formData.email,
+                password: formData.password,
+                options: {
+                    data: {
+                        full_name: formData.full_name,
+                        phone: formData.phone,
+                    },
+                    emailRedirectTo: `${window.location.origin}/auth/callback`,
+                },
+            });
+
+            if (authError) {
+                if (authError.message.includes('already registered')) {
+                    setError('This email is already registered. Please log in instead.');
+                } else {
+                    setError(authError.message);
+                }
+                return;
+            }
+
+            // Save user info to localStorage for dashboard
+            localStorage.setItem('schemeindia_user', JSON.stringify({
+                email: formData.email,
+                name: formData.full_name,
+            }));
+
+            // Redirect to verify page — Supabase sends the verification email automatically
+            router.push('/auth/verify');
         } catch {
             setError('Something went wrong. Please try again.');
         } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleGoogleSignIn = async () => {
+        setLoading(true);
+        setError('');
+        try {
+            const { error: authError } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: `${window.location.origin}/auth/callback?redirect=${encodeURIComponent('/dashboard')}`,
+                    queryParams: {
+                        prompt: 'select_account',
+                    },
+                },
+            });
+            if (authError) {
+                setError(authError.message);
+                setLoading(false);
+            }
+        } catch {
+            setError('Failed to initialize Google Sign-In. Please try again.');
             setLoading(false);
         }
     };
@@ -74,13 +125,7 @@ export default function SignupPage() {
                         variant="outline"
                         size="lg"
                         className="w-full font-medium"
-                        onClick={async () => {
-                            // TODO: Replace with real Supabase Google OAuth
-                            // const { data, error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/auth/callback` } });
-                            setLoading(true);
-                            await new Promise((r) => setTimeout(r, 1000));
-                            router.push('/questionnaire');
-                        }}
+                        onClick={handleGoogleSignIn}
                         disabled={loading}
                     >
                         <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">

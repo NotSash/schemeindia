@@ -100,10 +100,65 @@ function SelectField({ id, label, value, onChange, options, helper }: {
     );
 }
 
+// Validate required fields for each step
+function validateStep(step: number, data: QuestionnaireData): string | null {
+    switch (step) {
+        case 0: // Personal
+            if (!data.full_name.trim()) return 'Please enter your full name.';
+            if (!data.date_of_birth) return 'Please enter your date of birth.';
+            if (!data.gender) return 'Please select your gender.';
+            if (!data.marital_status) return 'Please select your marital status.';
+            if (!data.religion) return 'Please select your religion.';
+            if (data.minority_status === null) return 'Please indicate if you belong to a minority community.';
+            return null;
+        case 1: // Location
+            if (!data.state) return 'Please select your state.';
+            if (!data.district) return 'Please select your district.';
+            if (!data.location_type) return 'Please select your area type.';
+            return null;
+        case 2: // Social Category
+            if (!data.category) return 'Please select your category.';
+            if (data.bpl_card === null) return 'Please indicate if you have a BPL card.';
+            if (!data.ration_card_type) return 'Please select your ration card type.';
+            if (data.has_aadhaar === null) return 'Please indicate if you have an Aadhaar card.';
+            if (data.has_bank_account === null) return 'Please indicate if you have a bank account.';
+            if (data.ex_serviceman === null) return 'Please indicate if you are an ex-serviceman.';
+            return null;
+        case 3: // Education
+            if (!data.education_level) return 'Please select your education level.';
+            if (data.is_student === null) return 'Please indicate if you are a student.';
+            return null;
+        case 4: // Occupation
+            if (!data.occupation) return 'Please select your occupation.';
+            if (!data.annual_income) return 'Please select your annual income range.';
+            return null;
+        case 5: // Family
+            if (!data.number_of_dependents) return 'Please enter the number of family members.';
+            if (data.is_single_parent === null) return 'Please indicate if you are a single parent.';
+            if (data.has_senior_citizens === null) return 'Please indicate if you have senior citizens in your family.';
+            return null;
+        case 6: // Health
+            if (data.disability === null) return 'Please indicate if any family member has a disability.';
+            if (data.has_chronic_illness === null) return 'Please indicate if any family member has a chronic illness.';
+            return null;
+        case 7: // Housing
+            if (!data.house_type) return 'Please select your housing status.';
+            if (data.land_ownership_general === null) return 'Please indicate if you own any land.';
+            return null;
+        case 8: // Needs
+            if (data.specific_needs.length === 0) return 'Please select at least one area of need.';
+            return null;
+        default:
+            return null;
+    }
+}
+
 export default function QuestionnairePage() {
     const router = useRouter();
     const [step, setStep] = useState(0);
     const [data, setData] = useState<QuestionnaireData>(DEFAULT_DATA);
+    const [stepError, setStepError] = useState<string | null>(null);
+    const [confirmed, setConfirmed] = useState(false);
 
     // Load saved data
     useEffect(() => {
@@ -129,6 +184,13 @@ export default function QuestionnairePage() {
     };
 
     const next = () => {
+        const error = validateStep(step, data);
+        if (error) {
+            setStepError(error);
+            window.scrollTo(0, 0);
+            return;
+        }
+        setStepError(null);
         const newStep = Math.min(step + 1, 9);
         setStep(newStep);
         update({ currentStep: newStep });
@@ -136,6 +198,7 @@ export default function QuestionnairePage() {
     };
 
     const prev = () => {
+        setStepError(null);
         const newStep = Math.max(step - 1, 0);
         setStep(newStep);
         update({ currentStep: newStep });
@@ -143,12 +206,18 @@ export default function QuestionnairePage() {
     };
 
     const goToStep = (s: number) => {
+        setStepError(null);
         setStep(s);
         update({ currentStep: s });
         window.scrollTo(0, 0);
     };
 
     const handleSubmit = () => {
+        if (!confirmed) {
+            setStepError('Please confirm the checkbox above before submitting.');
+            return;
+        }
+        setStepError(null);
         update({ isComplete: true });
         router.push('/payment');
     };
@@ -197,6 +266,13 @@ export default function QuestionnairePage() {
                 {/* Form Card */}
                 <Card className="border-0 shadow-lg">
                     <CardContent className="p-6 sm:p-8">
+                        {/* Validation Error */}
+                        {stepError && (
+                            <div className="bg-destructive/10 text-destructive text-sm rounded-lg p-3 mb-5 flex items-center gap-2">
+                                <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                {stepError}
+                            </div>
+                        )}
                         {/* Step 1: Personal */}
                         {step === 0 && (
                             <div className="space-y-5">
@@ -585,7 +661,7 @@ export default function QuestionnairePage() {
                                 ))}
 
                                 <label className="flex items-start gap-3 p-4 rounded-lg border bg-brand-blue/5">
-                                    <Checkbox id="confirm" className="mt-0.5" />
+                                    <Checkbox id="confirm" className="mt-0.5" checked={confirmed} onCheckedChange={(checked) => setConfirmed(checked === true)} />
                                     <span className="text-sm">I confirm that all information provided is accurate to the best of my knowledge. I understand that the accuracy of my scheme matches depends on the accuracy of this information.</span>
                                 </label>
                             </div>
@@ -611,14 +687,20 @@ export default function QuestionnairePage() {
                                     <ArrowRight className="ml-2 h-4 w-4" />
                                 </Button>
                             ) : (
-                                <Button
-                                    onClick={handleSubmit}
-                                    className="bg-brand-green hover:bg-brand-green/90 text-white font-semibold"
-                                    size="lg"
-                                >
-                                    Submit & Find Schemes
-                                    <ArrowRight className="ml-2 h-4 w-4" />
-                                </Button>
+                                <div className="flex flex-col items-end gap-1">
+                                    <Button
+                                        onClick={handleSubmit}
+                                        className={`bg-brand-green hover:bg-brand-green/90 text-white font-semibold ${!confirmed ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        size="lg"
+                                        disabled={!confirmed}
+                                    >
+                                        Submit & Find Schemes
+                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                    </Button>
+                                    {!confirmed && (
+                                        <p className="text-xs text-muted-foreground">Please confirm the checkbox above</p>
+                                    )}
+                                </div>
                             )}
                         </div>
                     </CardContent>

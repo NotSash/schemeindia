@@ -7,8 +7,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ArrowLeft, Mail } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 
 export default function ForgotPasswordPage() {
+    const supabase = createClient();
     const [sent, setSent] = useState(false);
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState('');
@@ -16,7 +18,9 @@ export default function ForgotPasswordPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        await new Promise((r) => setTimeout(r, 1000));
+        await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${window.location.origin}/auth/callback`,
+        });
         setSent(true);
         setLoading(false);
     };

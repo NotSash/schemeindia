@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -20,6 +21,7 @@ import {
     AlertCircle,
     Edit,
 } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 
 interface DashboardData {
     name: string;
@@ -32,6 +34,8 @@ interface DashboardData {
 }
 
 export default function DashboardPage() {
+    const router = useRouter();
+    const supabase = createClient();
     const [data, setData] = useState<DashboardData>({
         name: '',
         email: '',
@@ -43,19 +47,40 @@ export default function DashboardPage() {
     });
 
     useEffect(() => {
+        // Load user info from Supabase auth (primary source)
+        supabase.auth.getUser().then(({ data: { user } }) => {
+            if (user) {
+                setData((prev) => ({
+                    ...prev,
+                    name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+                    email: user.email || '',
+                }));
+            }
+        });
+
+        // Load questionnaire data from localStorage (secondary source)
         const saved = localStorage.getItem('schemeindia_questionnaire');
         if (saved) {
             try {
                 const profile = JSON.parse(saved);
                 setData((prev) => ({
                     ...prev,
-                    name: profile.full_name || 'User',
+                    // Only override name if questionnaire has a name and auth didn't provide one
+                    name: prev.name || profile.full_name || 'User',
                     profileComplete: profile.isComplete || false,
                     schemesFound: 14, // Mock
                 }));
             } catch { /* ignore */ }
         }
-    }, []);
+    }, [supabase.auth]);
+
+    const handleSignOut = async () => {
+        await supabase.auth.signOut();
+        localStorage.removeItem('schemeindia_user');
+        localStorage.removeItem('schemeindia_questionnaire');
+        router.push('/');
+        router.refresh();
+    };
 
     const menuItems = [
         { href: '/results', icon: FileText, label: 'View Results', desc: 'See your matched schemes' },
@@ -79,11 +104,9 @@ export default function DashboardPage() {
                         </p>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Link href="/">
-                            <Button variant="ghost" size="sm">
-                                <LogOut className="mr-2 h-4 w-4" /> Sign Out
-                            </Button>
-                        </Link>
+                        <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                            <LogOut className="mr-2 h-4 w-4" /> Sign Out
+                        </Button>
                     </div>
                 </div>
 

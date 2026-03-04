@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 declare global {
     interface Window {
@@ -22,17 +22,19 @@ declare global {
 }
 
 export default function GoogleTranslate() {
-    useEffect(() => {
-        // Avoid re-initialization
-        if (document.getElementById('google-translate-script')) return;
+    const containerRef = useRef<HTMLDivElement>(null);
 
-        window.googleTranslateElementInit = () => {
-            if (document.getElementById('google_translate_element')) {
+    useEffect(() => {
+        const initWidget = () => {
+            const el = document.getElementById('google_translate_element');
+            if (el && window.google?.translate?.TranslateElement) {
+                // Clear any stale content so Google re-renders the dropdown
+                el.innerHTML = '';
                 new window.google.translate.TranslateElement(
                     {
                         pageLanguage: 'en',
                         includedLanguages: 'en,hi,bn,te,mr,ta,gu,kn,ml,pa,or,as,ur,sa',
-                        layout: 0, // HORIZONTAL — more compact
+                        layout: 0,
                         autoDisplay: false,
                     },
                     'google_translate_element'
@@ -40,6 +42,19 @@ export default function GoogleTranslate() {
             }
         };
 
+        // Always set the global init callback (used on first script load)
+        window.googleTranslateElementInit = initWidget;
+
+        const scriptExists = document.getElementById('google-translate-script');
+
+        if (scriptExists) {
+            // Script already loaded from a previous mount — just re-init the widget
+            // Use a short timeout to let the DOM element settle
+            const timer = setTimeout(initWidget, 100);
+            return () => clearTimeout(timer);
+        }
+
+        // First time: inject the script
         const script = document.createElement('script');
         script.id = 'google-translate-script';
         script.src =
@@ -49,11 +64,9 @@ export default function GoogleTranslate() {
 
         // Clean up any Google Translate banner that appears
         const observer = new MutationObserver(() => {
-            // Force body.top = 0 whenever Google tries to change it
             if (document.body.style.top !== '0px' && document.body.style.top !== '') {
                 document.body.style.top = '0px';
             }
-            // Hide banner frames
             const frames = document.querySelectorAll('.goog-te-banner-frame, iframe.goog-te-banner-frame');
             frames.forEach((frame) => {
                 (frame as HTMLElement).style.display = 'none';
@@ -76,6 +89,7 @@ export default function GoogleTranslate() {
                 भाषा:
             </span>
             <div
+                ref={containerRef}
                 id="google_translate_element"
                 className="[&_.goog-te-gadget]:!m-0 [&_.goog-te-gadget]:!p-0 min-w-[90px] max-w-[150px] overflow-hidden"
             />

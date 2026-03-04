@@ -8,11 +8,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Eye, EyeOff, LogIn } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 
 function LoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const redirectTo = searchParams.get('redirect') || '/questionnaire';
+    const redirectTo = searchParams.get('redirect') || '/dashboard';
+    const supabase = createClient();
 
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -25,11 +27,60 @@ function LoginForm() {
         setError('');
 
         try {
-            await new Promise((r) => setTimeout(r, 1000));
+            const { error: authError } = await supabase.auth.signInWithPassword({
+                email: formData.email,
+                password: formData.password,
+            });
+
+            if (authError) {
+                if (authError.message.includes('Email not confirmed')) {
+                    setError('Please verify your email before logging in. Check your inbox for the verification link.');
+                } else if (authError.message.includes('Invalid login credentials')) {
+                    setError('Invalid email or password. Please try again.');
+                } else {
+                    setError(authError.message);
+                }
+                return;
+            }
+
+            // Save user info to localStorage for dashboard
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                localStorage.setItem('schemeindia_user', JSON.stringify({
+                    id: user.id,
+                    email: user.email,
+                    name: user.user_metadata?.full_name || user.email?.split('@')[0] || '',
+                }));
+            }
+
             router.push(redirectTo);
         } catch {
-            setError('Invalid email or password. Please try again.');
+            setError('Something went wrong. Please try again.');
         } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleGoogleSignIn = async () => {
+        setLoading(true);
+        setError('');
+        try {
+            const { error: authError } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`,
+                    queryParams: {
+                        prompt: 'select_account',
+                    },
+                },
+            });
+            if (authError) {
+                setError(authError.message);
+                setLoading(false);
+            }
+            // If successful, the browser will redirect to Google's OAuth page
+        } catch {
+            setError('Failed to initialize Google Sign-In. Please try again.');
             setLoading(false);
         }
     };
@@ -65,11 +116,7 @@ function LoginForm() {
                         variant="outline"
                         size="lg"
                         className="w-full font-medium"
-                        onClick={async () => {
-                            setLoading(true);
-                            await new Promise((r) => setTimeout(r, 1000));
-                            router.push(redirectTo);
-                        }}
+                        onClick={handleGoogleSignIn}
                         disabled={loading}
                     >
                         <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">

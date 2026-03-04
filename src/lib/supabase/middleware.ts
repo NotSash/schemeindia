@@ -68,7 +68,14 @@ export async function updateSession(request: NextRequest) {
         return NextResponse.redirect(url);
     }
 
-    // Redirect to home if authenticated user tries to access auth routes
+    // Redirect logged-in users from homepage to dashboard
+    if (user && pathname === '/') {
+        const url = request.nextUrl.clone();
+        url.pathname = '/dashboard';
+        return NextResponse.redirect(url);
+    }
+
+    // Redirect to dashboard if authenticated user tries to access auth routes
     if (user && authRoutes.some((route) => pathname.startsWith(route))) {
         const url = request.nextUrl.clone();
         url.pathname = '/dashboard';

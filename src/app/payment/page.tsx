@@ -19,6 +19,7 @@ import {
     GraduationCap,
     Home,
     Heart,
+    X,
 } from 'lucide-react';
 import { PRICING_PLANS } from '@/lib/constants';
 import { formatCurrency, blurSchemeName } from '@/lib/utils';
@@ -49,6 +50,9 @@ export default function PaymentPage() {
     const [selectedPlan, setSelectedPlan] = useState<PlanType>('detailed');
     const [loading, setLoading] = useState(false);
     const [userName, setUserName] = useState('');
+    const [showMockModal, setShowMockModal] = useState(false);
+    const [mockStep, setMockStep] = useState<'form' | 'processing' | 'done'>('form');
+    const [mockUPI, setMockUPI] = useState('');
 
     useEffect(() => {
         // Get name from questionnaire data
@@ -61,10 +65,19 @@ export default function PaymentPage() {
         }
     }, []);
 
-    const handlePayment = async () => {
-        setLoading(true);
-        // Simulate payment flow — in production, create Razorpay order and open checkout
-        await new Promise((r) => setTimeout(r, 2000));
+    const handlePayment = () => {
+        setShowMockModal(true);
+        setMockStep('form');
+        setMockUPI('');
+    };
+
+    const handleMockConfirm = async () => {
+        setMockStep('processing');
+        // Simulate processing delay
+        await new Promise((r) => setTimeout(r, 2500));
+        setMockStep('done');
+        // Brief pause to show success before redirect
+        await new Promise((r) => setTimeout(r, 1000));
         router.push('/payment/success?plan=' + selectedPlan);
     };
 
@@ -221,6 +234,7 @@ export default function PaymentPage() {
                         {loading ? 'Processing...' : `Pay ${formatCurrency(PRICING_PLANS.find((p) => p.type === selectedPlan)!.price)} & Unlock Report`}
                         <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
+                    <p className="text-xs text-muted-foreground mt-2">🧪 Demo Mode — No real payment will be charged</p>
                 </div>
 
                 {/* Trust Signals */}
@@ -256,6 +270,90 @@ export default function PaymentPage() {
                     </CardContent>
                 </Card>
             </div>
+
+            {/* ===== MOCK PAYMENT MODAL ===== */}
+            {showMockModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    {/* Backdrop */}
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => { if (mockStep === 'form') setShowMockModal(false); }} />
+                    {/* Modal */}
+                    <div className="relative bg-background rounded-2xl shadow-2xl w-full max-w-md p-6 sm:p-8 animate-in zoom-in-95 fade-in duration-200">
+                        {mockStep === 'form' && (
+                            <>
+                                <div className="flex items-center justify-between mb-5">
+                                    <div>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <Badge variant="outline" className="text-[10px] bg-yellow-50 text-yellow-700 border-yellow-300">🧪 DEMO MODE</Badge>
+                                        </div>
+                                        <h3 className="text-lg font-bold">Mock Payment</h3>
+                                    </div>
+                                    <button onClick={() => setShowMockModal(false)} className="text-muted-foreground hover:text-foreground">
+                                        <X className="h-5 w-5" />
+                                    </button>
+                                </div>
+
+                                <div className="bg-muted/50 rounded-lg p-3 mb-5 text-sm">
+                                    <div className="flex justify-between">
+                                        <span className="text-muted-foreground">Plan</span>
+                                        <span className="font-medium">{PRICING_PLANS.find((p) => p.type === selectedPlan)?.name}</span>
+                                    </div>
+                                    <div className="flex justify-between mt-1">
+                                        <span className="text-muted-foreground">Amount</span>
+                                        <span className="font-bold text-brand-saffron">{formatCurrency(PRICING_PLANS.find((p) => p.type === selectedPlan)!.price)}</span>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="text-sm font-medium block mb-1.5">UPI ID (Demo)</label>
+                                        <input
+                                            type="text"
+                                            placeholder="yourname@upi"
+                                            value={mockUPI}
+                                            onChange={(e) => setMockUPI(e.target.value)}
+                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                        />
+                                        <p className="text-xs text-muted-foreground mt-1">Enter any value — this is a demo</p>
+                                    </div>
+
+                                    <Button
+                                        className="w-full bg-brand-green hover:bg-brand-green/90 text-white font-semibold"
+                                        size="lg"
+                                        onClick={handleMockConfirm}
+                                        disabled={!mockUPI.trim()}
+                                    >
+                                        <Shield className="mr-2 h-4 w-4" />
+                                        Confirm Mock Payment
+                                    </Button>
+
+                                    <p className="text-[10px] text-center text-muted-foreground">
+                                        No real money will be charged. This is a demo payment flow.
+                                    </p>
+                                </div>
+                            </>
+                        )}
+
+                        {mockStep === 'processing' && (
+                            <div className="text-center py-8">
+                                <div className="w-16 h-16 border-4 border-brand-saffron border-t-transparent rounded-full animate-spin mx-auto mb-5" />
+                                <h3 className="text-lg font-bold mb-1">Processing Payment...</h3>
+                                <p className="text-sm text-muted-foreground">Please wait while we verify your payment</p>
+                                <Badge variant="outline" className="mt-3 text-[10px] bg-yellow-50 text-yellow-700 border-yellow-300">🧪 DEMO MODE</Badge>
+                            </div>
+                        )}
+
+                        {mockStep === 'done' && (
+                            <div className="text-center py-8">
+                                <div className="flex h-16 w-16 mx-auto items-center justify-center rounded-full bg-brand-green/10 mb-4">
+                                    <CheckCircle2 className="h-8 w-8 text-brand-green" />
+                                </div>
+                                <h3 className="text-lg font-bold mb-1">Payment Successful!</h3>
+                                <p className="text-sm text-muted-foreground">Redirecting to your report...</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -37,7 +37,7 @@ export async function POST(request: Request) {
         // Production: Use Google Gemini API
         const { GoogleGenerativeAI } = await import('@google/generative-ai');
         const genAI = new GoogleGenerativeAI(geminiApiKey);
-        const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
         const prompt = `You are SchemeIndia AI, an expert assistant that helps Indian citizens understand government schemes. 
 You have deep knowledge of central and state government schemes in India including PM-KISAN, PMJAY, PMAY, MUDRA, APY, PMSBY, PMJJBY, and thousands more.

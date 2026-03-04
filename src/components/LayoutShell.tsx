@@ -8,9 +8,6 @@ import Footer from '@/components/Footer';
 const MINIMAL_LAYOUT_ROUTES = [
     '/auth/',
     '/questionnaire',
-    '/payment',
-    '/results/',
-    '/dashboard',
     '/admin',
 ];
 

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import type { Metadata } from 'next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -13,13 +12,37 @@ export default function ContactPage() {
     const [submitted, setSubmitted] = useState(false);
     const [loading, setLoading] = useState(false);
 
+    const [error, setError] = useState('');
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
-        // Simulate submission
-        await new Promise((r) => setTimeout(r, 1500));
-        setSubmitted(true);
-        setLoading(false);
+        setError('');
+
+        try {
+            const formData = new FormData(e.currentTarget);
+            const response = await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: formData.get('name'),
+                    email: formData.get('email'),
+                    phone: formData.get('phone'),
+                    subject: formData.get('subject'),
+                    message: formData.get('message'),
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to send message');
+            }
+
+            setSubmitted(true);
+        } catch {
+            setError('Failed to send message. Please try again or email us directly.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -72,6 +95,11 @@ export default function ContactPage() {
                                     </div>
                                 ) : (
                                     <form onSubmit={handleSubmit} className="space-y-5">
+                                        {error && (
+                                            <div className="bg-destructive/10 text-destructive text-sm rounded-md p-3">
+                                                {error}
+                                            </div>
+                                        )}
                                         <div className="grid sm:grid-cols-2 gap-4">
                                             <div>
                                                 <Label htmlFor="name">Full Name *</Label>
