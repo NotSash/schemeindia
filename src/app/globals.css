@@ -300,17 +300,31 @@ body {
 /* Style only the dropdown select */
 .goog-te-gadget .goog-te-combo {
   border: 1px solid var(--border) !important;
-  border-radius: 6px !important;
-  padding: 4px 8px !important;
-  font-size: 13px !important;
+  border-radius: 8px !important;
+  padding: 5px 24px 5px 10px !important;
+  font-size: 12px !important;
   font-family: inherit !important;
   background: var(--background) !important;
   color: var(--foreground) !important;
   outline: none !important;
   cursor: pointer !important;
   height: 32px !important;
-  max-width: 140px !important;
-  appearance: auto !important;
+  max-width: 130px !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 8px center !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+}
+
+.goog-te-gadget .goog-te-combo:hover {
+  border-color: #f6993f !important;
+}
+
+.goog-te-gadget .goog-te-combo:focus {
+  border-color: #f6993f !important;
+  box-shadow: 0 0 0 2px rgba(246, 153, 63, 0.15) !important;
 }
 
 /* Hide "Powered by Google" text and other attribution */
@@ -327,11 +341,7 @@ body {
   overflow: hidden !important;
 }
 
-/* Fix any floating/overlay elements */
-.skiptranslate {
-  /* Allow the inline widget but block everything else */
-}
-
+/* Fix any floating/overlay elements — allow the inline widget but block everything else */
 .skiptranslate iframe {
   display: none !important;
   height: 0 !important;
@@ -471,6 +481,7 @@ html {
 .line-clamp-1 {
   display: -webkit-box;
   -webkit-line-clamp: 1;
+  line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -478,6 +489,62 @@ html {
 .line-clamp-3 {
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* ============================================================
+   Page transition animations
+   ============================================================ */
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+main>* {
+  animation: pageEnter 0.35s ease-out;
+}
+
+/* ============================================================
+   Premium glass card effect
+   ============================================================ */
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* ============================================================
+   Hover lift effect for interactive cards
+   ============================================================ */
+
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 10px -6px rgba(0, 0, 0, 0.05);
+}
+
+/* ============================================================
+   Gradient text utility
+   ============================================================ */
+
+.text-gradient {
+  background: linear-gradient(135deg, #1a365d 0%, #f6993f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }

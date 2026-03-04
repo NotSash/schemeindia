@@ -92,21 +92,31 @@ export default function DashboardPage() {
     return (
         <div className="min-h-screen bg-muted/30">
             <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-                {/* Header */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-8">
-                    <div>
-                        <h1 className="text-2xl font-bold flex items-center gap-2">
-                            <LayoutDashboard className="h-6 w-6 text-brand-blue" />
-                            Dashboard
-                        </h1>
-                        <p className="text-sm text-muted-foreground mt-1">
-                            Welcome back, {data.name || 'User'}!
-                        </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="sm" onClick={handleSignOut}>
-                            <LogOut className="mr-2 h-4 w-4" /> Sign Out
-                        </Button>
+                {/* Premium Header Banner */}
+                <div className="relative overflow-hidden rounded-2xl gradient-hero p-6 sm:p-8 mb-8 text-white">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3" />
+                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/3" />
+                    <div className="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/15 backdrop-blur-sm text-2xl font-bold ring-2 ring-white/20">
+                                {(data.name || 'U')[0].toUpperCase()}
+                            </div>
+                            <div>
+                                <h1 className="text-xl sm:text-2xl font-bold">
+                                    Welcome back, {data.name || 'User'}! 👋
+                                </h1>
+                                <p className="text-sm text-blue-100 mt-0.5">
+                                    {data.email || 'Manage your scheme matches and profile'}
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Link href="/questionnaire">
+                                <Button size="sm" variant="secondary" className="bg-white/15 hover:bg-white/25 text-white border-0 backdrop-blur-sm">
+                                    <Edit className="mr-1.5 h-4 w-4" /> Edit Profile
+                                </Button>
+                            </Link>
+                        </div>
                     </div>
                 </div>
 
