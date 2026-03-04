@@ -271,24 +271,28 @@ export default function DashboardPage() {
                 {/* Settings */}
                 <h2 className="text-lg font-bold mt-8 mb-4">Account</h2>
                 <div className="grid sm:grid-cols-2 gap-4">
-                    <Card className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                        <CardContent className="p-5 flex items-center gap-4">
-                            <Settings className="h-5 w-5 text-muted-foreground" />
-                            <div>
-                                <p className="font-semibold text-sm">Account Settings</p>
-                                <p className="text-xs text-muted-foreground">Update email, password, notifications</p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                        <CardContent className="p-5 flex items-center gap-4">
-                            <CreditCard className="h-5 w-5 text-muted-foreground" />
-                            <div>
-                                <p className="font-semibold text-sm">Billing</p>
-                                <p className="text-xs text-muted-foreground">View invoices and payment methods</p>
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <Link href="/dashboard/settings">
+                        <Card className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer h-full">
+                            <CardContent className="p-5 flex items-center gap-4">
+                                <Settings className="h-5 w-5 text-muted-foreground" />
+                                <div>
+                                    <p className="font-semibold text-sm">Account Settings</p>
+                                    <p className="text-xs text-muted-foreground">Update email, password, notifications</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </Link>
+                    <Link href="/dashboard/billing">
+                        <Card className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer h-full">
+                            <CardContent className="p-5 flex items-center gap-4">
+                                <CreditCard className="h-5 w-5 text-muted-foreground" />
+                                <div>
+                                    <p className="font-semibold text-sm">Billing</p>
+                                    <p className="text-xs text-muted-foreground">View invoices and payment methods</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </Link>
                 </div>
             </div>
         </div>
