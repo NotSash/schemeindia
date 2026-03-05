@@ -86,7 +86,7 @@ export default function GoogleTranslate() {
     return (
         <div className="flex items-center gap-1.5 relative z-50">
             <span className="text-xs text-muted-foreground hidden sm:inline whitespace-nowrap">
-                भाषा:
+                Language:
             </span>
             <div
                 ref={containerRef}
