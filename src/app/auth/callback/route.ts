@@ -9,6 +9,8 @@ export async function GET(request: Request) {
 
     if (code) {
         const cookieStore = await cookies();
+        const response = NextResponse.redirect(new URL(redirectTo, requestUrl.origin));
+        
         const supabase = createServerClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL!,
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -19,7 +21,14 @@ export async function GET(request: Request) {
                     },
                     setAll(cookiesToSet) {
                         cookiesToSet.forEach(({ name, value, options }) => {
-                            cookieStore.set(name, value, options);
+                            // Set on the cookieStore in case of server-side operations
+                            try {
+                                cookieStore.set(name, value, options);
+                            } catch (error) {
+                                // Ignored
+                            }
+                            // Crucially, set on the response object to ensure it reaches the browser
+                            response.cookies.set(name, value, options);
                         });
                     },
                 },
@@ -30,7 +39,7 @@ export async function GET(request: Request) {
 
         if (!error) {
             // Successfully exchanged code for session
-            return NextResponse.redirect(new URL(redirectTo, requestUrl.origin));
+            return response;
         }
     }
 
